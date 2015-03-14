@@ -20,7 +20,7 @@ except ImportError:
 class TestMultipleThings(unittest.TestCase):
 
     def setUp(self):
-        self.db_path = '/tmp/train_collector.sqlite'
+        self.db_path = '/tmp/train_collector_unittest.sqlite'
         self.db = DB_sqlite(self.db_path)
         self.db.initialize_schema()
 

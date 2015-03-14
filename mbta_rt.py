@@ -64,6 +64,7 @@ class MbtaRt:
                                         trip_id_data['trip_number'],
                                         trip['vehicle']['vehicle_id'],
                                         trip['trip_id'],
+                                        trip['line'],
                                         trip_id_data['weekday']
                                     )
                                 except:
@@ -85,5 +86,5 @@ class MbtaRt:
         ret = {}
         ret['trip_number'] = tripidparts[6]
         ret['weekday'] = tripidparts[3]
-        ret['route_name'] = tripidparts[1]
+        ret['line'] = tripidparts[1]
         return ret

@@ -9,6 +9,9 @@ class DB_sqlite:
 
     def __init__(self, db_path):
         self.db_path = db_path
+        if not os.path.exists(self.db_path):
+            self.initialize_schema()
+
 
     def _connect_db(self):
         self.conn = sqlite3.connect(self.db_path, detect_types=sqlite3.PARSE_DECLTYPES|sqlite3.PARSE_COLNAMES)
@@ -29,7 +32,9 @@ class DB_sqlite:
             tripdate timestamp default current_timestamp,
             vehicle_number text NULLABLE default NULL,
             last_trip_using_this_vehicle_number text,
-            weekday text)
+            weekday text,
+            line text,
+            trip_id text)
             ''')
         self._disconnect_db()
 
@@ -39,20 +44,24 @@ class DB_sqlite:
 
         try:
             self.c.execute('''
-            INSERT INTO route_data (trip_number, tripdate, vehicle_number, weekday)
-            VALUES (?, ?, ?, ?)
+            INSERT INTO route_data (trip_number, tripdate, vehicle_number, weekday, line, trip_id)
+            VALUES (?, ?, ?, ?, ?, ?)
             ''',
                            (route_data.trip_number,
                            route_data.date,
                            route_data.vehicle_number,
-                           route_data.weekday))
+                           route_data.weekday,
+                           route_data.line,
+                           route_data.trip_id))
         except sqlite3.IntegrityError:
             self.c.execute('''
-            UPDATE route_data SET vehicle_number=?, weekday=?
-            WHERE trip_number=? AND date=?
+            UPDATE route_data SET vehicle_number=?, weekday=?, line=?, trip_id=?
+            WHERE trip_number=? AND tripdate=?
             ''',
                            (route_data.vehicle_number,
                            route_data.weekday,
+                           route_data.line,
+                           route_data.trip_id,
                            route_data.trip_number,
                            route_data.date))
 

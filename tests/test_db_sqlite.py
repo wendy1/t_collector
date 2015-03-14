@@ -18,7 +18,7 @@ except ImportError:
 class TestDb(unittest.TestCase):
 
     def setUp(self):
-        self.db_path = '/tmp/train_collector.sqlite'
+        self.db_path = '/tmp/train_collector_unittest.sqlite'
         self.db = DB_sqlite(self.db_path)
         self.db.initialize_schema()
 
@@ -26,12 +26,14 @@ class TestDb(unittest.TestCase):
         rd = RouteData('trip_number_123',
                        'vehicle_number_456',
                        'trip_id_something_or_other',
+                       'Mars',
                        'Monday')
         self.db.save_route_data(rd)
 
         rd = RouteData('trip_number_ttt',
                        'vehicle_number_ttt',
                        'trip_id_something_or_other',
+                       'Fitchburg',
                        'Tuesday')
         self.db.save_route_data(rd)
 
@@ -43,6 +45,7 @@ class TestDb(unittest.TestCase):
         rd = RouteData('331',
                        '1600',
                        'trip_id_something_or_other',
+                       'Lowell',
                        'Monday')
         self.db.save_route_data(rd)
 
@@ -57,6 +60,7 @@ class TestDb(unittest.TestCase):
         rd = RouteData('333',
                        '1600',
                        'trip_id_something_or_other',
+                       'Lowell',
                        'Monday')
         self.db.save_route_data(rd)
 
