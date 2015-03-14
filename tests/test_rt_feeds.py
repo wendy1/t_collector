@@ -7,8 +7,10 @@ try:
 except ImportError:
     import unittest
 
-import urllib2
 import json
+import logging
+import urllib2
+
 
 class MbtaRt:
     global routes_url, vehicles_by_route_url
@@ -16,10 +18,6 @@ class MbtaRt:
     rt_url_base = 'http://realtime.mbta.com/developer/api/v2'
     routes_url = rt_url_base +'/routes?api_key=%s&format=json' % api_key
     vehicles_by_route_url = rt_url_base +'/vehiclesbyroute?api_key=%s&format=json&route=' % api_key # append route-id
-
-    @classmethod
-    def prt(cls, msg):
-        print msg
 
     @classmethod
     def get_commuter_rail_routes(cls):
@@ -42,8 +40,8 @@ class MbtaRt:
 
             return ret
 
-        except Exception as e:
-            cls.prt('Problem parsing route data')
+        except:
+            logging.exception('Problem parsing route data')
             return {}
 
     @classmethod
@@ -77,9 +75,9 @@ class MbtaRt:
                             pass
                 except:
                     pass
-        except Exception as e:
-            cls.prt('No vehicle data available' + e.message)
-            return trip_vehicle
+        except:
+            #logging.exception('No vehicle data available for route %s', rid)
+            pass
 
         return trip_vehicle
 
