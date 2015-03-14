@@ -1,6 +1,7 @@
 import urllib2
 import json
 import logging
+from route_data import RouteData
 
 __author__ = 'wendy'
 
@@ -58,17 +59,13 @@ class MbtaRt:
                             trips = dir['trip']
                             for trip in trips:
                                 try:
-                                    trip_id = trip['trip_id']
-                                    trip_data = cls.parse_tripid(trip_id)
-                                    trip_number = trip_data['trip_number']
-                                    vehicle_id = trip['vehicle']['vehicle_id']
-                                    # add to our data
-                                    if trip_number not in trip_vehicle:
-                                        trip_vehicle[trip_number] = {}
-                                    trip_vehicle[trip_number]['vehicle_id'] = vehicle_id
-                                    trip_vehicle[trip_number]['trip_id'] = trip_id
-                                    trip_vehicle[trip_number]['weekday'] = trip_data['weekday']
-                                    trip_vehicle[trip_number]['route_name'] = trip_data['route_name']
+                                    trip_id_data = cls.parse_tripid(trip['trip_id'])
+                                    trip_vehicle[trip_id_data['trip_number']] = RouteData(
+                                        trip_id_data['trip_number'],
+                                        trip['vehicle']['vehicle_id'],
+                                        trip['trip_id'],
+                                        trip_id_data['weekday']
+                                    )
                                 except:
                                     pass
                         except:

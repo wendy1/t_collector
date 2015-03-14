@@ -27,9 +27,8 @@ class TestResearchReporter(unittest.TestCase):
     def test_get_all_vehicles(self):
         print '--- Getting vehicle data ---'
         vv = MbtaRt.get_all_vehicles()
-        for vvid in vv.keys():
-            td = vv[vvid]
-            print "Trip: '%s', vehicle %s, weekday %s, trip id '%s'" % (vvid, td['vehicle_id'], td['weekday'], td['trip_id'])
+        for rd in vv.values():
+            print "Trip: '%s', vehicle %s, weekday %s, trip id '%s'" % (rd.trip_number, rd.vehicle_number, rd.weekday, rd.trip_id)
 
     def test_get_trip_number_from_tripid(self):
         tripids = [

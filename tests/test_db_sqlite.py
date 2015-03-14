@@ -3,6 +3,7 @@
 
 import datetime
 import sys;
+from route_data import RouteData
 
 sys.path.append('.');sys.path.append('..')
 from db_sqlite import DB_sqlite
@@ -13,16 +14,8 @@ try:
 except ImportError:
     import unittest
 
-class RouteData:
-    def __init__(self, trip_number, vehicle_number, trip_id, weekday):
-        self.trip_number = trip_number
-        self.vehicle_number = vehicle_number
-        self.trip_id = trip_id
-        self.weekday = weekday
-        self.date = datetime.date.today()
 
-
-class TestResearchReporter(unittest.TestCase):
+class TestDb(unittest.TestCase):
 
     def setUp(self):
         self.db_path = '/tmp/train_collector.sqlite'
