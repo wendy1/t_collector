@@ -28,7 +28,12 @@ class TestMultipleThings(unittest.TestCase):
         print "--- Getting vehicle data ---"
         vdatas = MbtaRt.get_all_vehicles()
         for vdata  in vdatas.values():
+            # save this data
             self.db.save_route_data(vdata)
+            # check for previous route using same train
+            last_trip_number = self.db.get_last_trip_using_same_vehicle(vdata.vehicle_number, vdata.trip_number)
+            if last_trip_number is not None:
+                self.db.set_last_trip_using_same_vehicle(vdata.trip_number, last_trip_number)
 
 
 if __name__ == '__main__':
