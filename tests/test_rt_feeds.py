@@ -55,8 +55,8 @@ class MbtaRt:
 
         trip_vehicle = {}
 
-        try:
-            for rid in routes.keys():
+        for rid in routes.keys():
+            try:
                 vehicle_info = urllib2.urlopen(vehicles_by_route_url + rid)
                 vehicle_data = json.load(vehicle_info)
                 try:
@@ -66,20 +66,37 @@ class MbtaRt:
                             for trip in trips:
                                 try:
                                     trip_id = trip['trip_id']
-                                    vehicle = trip['vehicle']['vehicle_id']
+                                    trip_data = cls.parse_tripid(trip_id)
+                                    trip_number = trip_data['trip_number']
+                                    vehicle_id = trip['vehicle']['vehicle_id']
                                     # add to our data
-                                    trip_vehicle[trip_id] = vehicle
+                                    if trip_number not in trip_vehicle:
+                                        trip_vehicle[trip_number] = {}
+                                    trip_vehicle[trip_number]['vehicle_id'] = vehicle_id
+                                    trip_vehicle[trip_number]['trip_id'] = trip_id
+                                    trip_vehicle[trip_number]['weekday'] = trip_data['weekday']
+                                    trip_vehicle[trip_number]['route_name'] = trip_data['route_name']
                                 except:
                                     pass
                         except:
                             pass
                 except:
                     pass
-        except:
-            #logging.exception('No vehicle data available for route %s', rid)
-            pass
+            except:
+                #logging.exception('No vehicle data available for route %s', rid)
+                logging.error('No realtime data for %s', rid)
+                pass
 
         return trip_vehicle
+
+    @classmethod
+    def parse_tripid(cls, tripid):
+        tripidparts = tripid.split('-')
+        ret = {}
+        ret['trip_number'] = tripidparts[6]
+        ret['weekday'] = tripidparts[3]
+        ret['route_name'] = tripidparts[1]
+        return ret
 
 
 class TestResearchReporter(unittest.TestCase):
@@ -98,7 +115,24 @@ class TestResearchReporter(unittest.TestCase):
         print '--- Getting vehicle data ---'
         vv = MbtaRt.get_all_vehicles()
         for vvid in vv.keys():
-            print "'%s': '%s'" % (vvid, vv[vvid])
+            td = vv[vvid]
+            print "Trip: '%s', vehicle %s, weekday %s, trip id '%s'" % (vvid, td['vehicle_id'], td['weekday'], td['trip_id'])
+
+    def test_get_trip_number_from_tripid(self):
+        tripids = [
+            'CR-Kingston-CR-Saturday-Kingston-Dec14-1035',
+            'CR-Franklin-CR-Saturday-Franklin-Dec13-1708',
+            'CR-Franklin-CR-Saturday-Franklin-Dec13-1709',
+            'CR-Kingston-CR-Saturday-Kingston-Dec14-1054',
+            'CR-Fitchburg-CR-Saturday-Fitchburg-Aug14-1451',
+            'CR-Needham-CR-Saturday-Needham-Dec14-1607',
+            'CR-Middleborough-CR-Saturday-Middleborough-Dec13-1008'
+        ]
+
+        for tripid in tripids:
+            td = MbtaRt.parse_tripid(tripid)
+            print "Trip number %s - trip id '%s', weekday %s, route name %s" \
+                  % (td['trip_number'],tripid, td['weekday'], td['route_name'])
 
 if __name__ == '__main__':
     unittest.main()
