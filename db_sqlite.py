@@ -1,6 +1,7 @@
 import datetime
 import os
 import sqlite3
+from route_data import RouteData
 
 __author__ = 'wendy'
 
@@ -32,6 +33,7 @@ class DB_sqlite:
             tripdate timestamp default current_timestamp,
             vehicle_number text NULLABLE default NULL,
             last_trip_using_this_vehicle_number text,
+            last_trip_name text,
             weekday text,
             line text,
             trip_id text)
@@ -68,13 +70,13 @@ class DB_sqlite:
         self.conn.commit()
         self._disconnect_db()
 
-    def get_last_trip_using_same_vehicle(self, vehicle_number, this_trip_number):
+    def get_last_route_using_same_vehicle(self, vehicle_number, this_trip_number):
         '''Returns the trip number (as a string) or None if not found'''
         self._connect_db()
         self.c = self.conn.cursor()
 
         self.c.execute('''
-            SELECT trip_number FROM route_data
+            SELECT trip_number, line, trip_id, weekday FROM route_data
             WHERE vehicle_number=? AND trip_number != ?
             ORDER BY tripdate DESC
             LIMIT 1''',
@@ -86,16 +88,18 @@ class DB_sqlite:
         if len(l) == 0:
             return None
 
-        return str(l[0][0])
+        (trip_number, line, trip_id, weekday) = l[0]
 
-    def set_last_trip_using_same_vehicle(self, this_trip_number, last_trip_number):
+        return RouteData(trip_number, vehicle_number, trip_id, line, weekday)
+
+    def set_last_trip_using_same_vehicle(self, this_trip_number, last_trip_number, last_trip_name):
         self._connect_db()
         self.c = self.conn.cursor()
         a = self.c.execute('''
-            UPDATE route_data SET last_trip_using_this_vehicle_number=?
+            UPDATE route_data SET last_trip_using_this_vehicle_number=?, last_trip_name=?
             WHERE trip_number=? AND date(tripdate)=date(?)
             ''',
-            (last_trip_number, this_trip_number, datetime.datetime.today()))
+            (last_trip_number, last_trip_name, this_trip_number, datetime.datetime.today()))
 
         b = self.conn.commit()
         self._disconnect_db()

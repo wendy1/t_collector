@@ -26,7 +26,10 @@ class TestResearchReporter(unittest.TestCase):
 
     def test_get_all_vehicles(self):
         print '--- Getting vehicle data ---'
-        vv = MbtaRt.get_all_vehicles()
+
+        routes = MbtaRt.get_commuter_rail_routes()
+
+        vv = MbtaRt.get_all_vehicles(routes)
         for rd in vv.values():
             print "Trip: '%s', vehicle %s, weekday %s, trip id '%s'" % (rd.trip_number, rd.vehicle_number, rd.weekday, rd.trip_id)
 
@@ -44,7 +47,7 @@ class TestResearchReporter(unittest.TestCase):
         for tripid in tripids:
             td = MbtaRt.parse_tripid(tripid)
             print "Trip number %s - trip id '%s', weekday %s, route name %s" \
-                  % (td['trip_number'],tripid, td['weekday'], td['route_name'])
+                  % (td['trip_number'],tripid, td['weekday'], td['line'])
 
 if __name__ == '__main__':
     unittest.main()

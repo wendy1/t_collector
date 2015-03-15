@@ -1,6 +1,7 @@
 import urllib2
 import json
 import logging
+import time
 from route_data import RouteData
 
 __author__ = 'wendy'
@@ -39,20 +40,17 @@ class MbtaRt:
             return {}
 
     @classmethod
-    def get_all_vehicles(cls):
+    def get_all_vehicles(cls, routes, delay=2):
         '''Return all current vehicles for known routes
         or return {} if error
         '''
-        routes = cls.get_commuter_rail_routes()
-        if len(routes) == 0:
-            return {}
-
         trip_vehicle = {}
 
         for rid in routes.keys():
             try:
                 vehicle_info = urllib2.urlopen(vehicles_by_route_url + rid)
                 vehicle_data = json.load(vehicle_info)
+                time.sleep(delay)
                 try:
                     for dir in vehicle_data['direction']:
                         try:
@@ -64,7 +62,7 @@ class MbtaRt:
                                         trip_id_data['trip_number'],
                                         trip['vehicle']['vehicle_id'],
                                         trip['trip_id'],
-                                        trip['line'],
+                                        trip_id_data['line'],
                                         trip_id_data['weekday']
                                     )
                                 except:

@@ -26,14 +26,16 @@ class TestMultipleThings(unittest.TestCase):
 
     def test_get_andsave_route_data(self):
         print "--- Getting vehicle data ---"
-        vdatas = MbtaRt.get_all_vehicles()
+        routes = MbtaRt.get_commuter_rail_routes()
+
+        vdatas = MbtaRt.get_all_vehicles(routes)
         for vdata  in vdatas.values():
             # save this data
             self.db.save_route_data(vdata)
             # check for previous route using same train
-            last_trip_number = self.db.get_last_trip_using_same_vehicle(vdata.vehicle_number, vdata.trip_number)
-            if last_trip_number is not None:
-                self.db.set_last_trip_using_same_vehicle(vdata.trip_number, last_trip_number)
+            last_route = self.db.get_last_route_using_same_vehicle(vdata.vehicle_number, vdata.trip_number)
+            if last_route is not None:
+                self.db.set_last_trip_using_same_vehicle(vdata.trip_number, last_route.trip_number, last_route.line)
 
 
 if __name__ == '__main__':

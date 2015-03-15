@@ -39,7 +39,7 @@ class TestDb(unittest.TestCase):
 
     def test_get_last_trip_with_same_vehicle(self):
         # no previous trip to start with
-        self.assertTrue(self.db.get_last_trip_using_same_vehicle('1600', '333') is None)
+        self.assertTrue(self.db.get_last_route_using_same_vehicle('1600', '333') is None)
 
         # previous trip 335 had this train
         rd = RouteData('331',
@@ -50,11 +50,12 @@ class TestDb(unittest.TestCase):
         self.db.save_route_data(rd)
 
         # now we find it
-        last_trip = self.db.get_last_trip_using_same_vehicle('1600', '333')
-        self.assertEqual(last_trip, '331')
+        last_route = self.db.get_last_route_using_same_vehicle('1600', '333')
+        self.assertEqual(last_route.trip_number, '331')
+        self.assertEqual(last_route.line, 'Lowell')
 
         # but not if it's the same trip number as the current trip
-        self.assertTrue(self.db.get_last_trip_using_same_vehicle('1600', '331') is None)
+        self.assertTrue(self.db.get_last_route_using_same_vehicle('1600', '331') is None)
 
     def test_update_last_trip_number(self):
         rd = RouteData('333',
@@ -64,7 +65,7 @@ class TestDb(unittest.TestCase):
                        'Monday')
         self.db.save_route_data(rd)
 
-        self.db.set_last_trip_using_same_vehicle('333', '331')
+        self.db.set_last_trip_using_same_vehicle('333', '331', 'Lowell')
 
 
 if __name__ == '__main__':
