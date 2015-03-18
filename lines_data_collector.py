@@ -37,7 +37,7 @@ if __name__ == '__main__':
     log.info("=== Starting ===")
 
     restart_interval = datetime.timedelta(minutes=15)
-    wait_between_calls_seconds = 30
+    wait_between_calls_seconds = 20
 
     routes = MbtaRt.get_commuter_rail_routes()
     if len(routes) == 0:

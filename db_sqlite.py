@@ -36,7 +36,9 @@ class DB_sqlite:
             last_trip_name text,
             weekday text,
             line text,
-            trip_id text)
+            trip_id text,
+            trip_start_time timestamp,
+            trip_end_time timestamp)
             ''')
         self._disconnect_db()
 
@@ -46,15 +48,17 @@ class DB_sqlite:
 
         try:
             self.c.execute('''
-            INSERT INTO route_data (trip_number, tripdate, vehicle_number, weekday, line, trip_id)
-            VALUES (?, ?, ?, ?, ?, ?)
+            INSERT INTO route_data (trip_number, tripdate, vehicle_number, weekday, line, trip_id, trip_start_time, trip_end_time)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             ''',
                            (route_data.trip_number,
                            route_data.date,
                            route_data.vehicle_number,
                            route_data.weekday,
                            route_data.line,
-                           route_data.trip_id))
+                           route_data.trip_id,
+                           route_data.trip_start_time,
+                           route_data.trip_end_time))
         except sqlite3.IntegrityError:
             self.c.execute('''
             UPDATE route_data SET vehicle_number=?, weekday=?, line=?, trip_id=?
@@ -76,9 +80,9 @@ class DB_sqlite:
         self.c = self.conn.cursor()
 
         self.c.execute('''
-            SELECT trip_number, line, trip_id, weekday FROM route_data
+            SELECT trip_number, line, trip_id, trip_start_time, trip_end_time, weekday FROM route_data
             WHERE vehicle_number=? AND trip_number != ?
-            ORDER BY tripdate DESC
+            ORDER BY rowid DESC
             LIMIT 1''',
            (vehicle_number, this_trip_number))
 
@@ -88,9 +92,9 @@ class DB_sqlite:
         if len(l) == 0:
             return None
 
-        (trip_number, line, trip_id, weekday) = l[0]
+        (trip_number, line, trip_id, start_time, end_time, weekday) = l[0]
 
-        return RouteData(trip_number, vehicle_number, trip_id, line, weekday)
+        return RouteData(trip_number, vehicle_number, trip_id, line, start_time, end_time, weekday)
 
     def set_last_trip_using_same_vehicle(self, this_trip_number, last_trip_number, last_trip_name):
         self._connect_db()

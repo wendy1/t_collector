@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
 
-import sys; sys.path.append('.');sys.path.append('..')
+import sys;
+sys.path.append('.');sys.path.append('..')
 
 from mbta_rt import MbtaRt
 
@@ -48,6 +49,11 @@ class TestResearchReporter(unittest.TestCase):
             td = MbtaRt.parse_tripid(tripid)
             print "Trip number %s - trip id '%s', weekday %s, route name %s" \
                   % (td['trip_number'],tripid, td['weekday'], td['line'])
+
+    def test_trip_info(self):
+        ti = MbtaRt.get_schedule_for_trip('CR-Haverhill-CR-Weekday-Haverhill-May14-263')
+        pass
+
 
 if __name__ == '__main__':
     unittest.main()

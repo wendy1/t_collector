@@ -27,6 +27,8 @@ class TestDb(unittest.TestCase):
                        'vehicle_number_456',
                        'trip_id_something_or_other',
                        'Mars',
+                       '1426679400',
+                       '1426681020',
                        'Monday')
         self.db.save_route_data(rd)
 
@@ -34,6 +36,8 @@ class TestDb(unittest.TestCase):
                        'vehicle_number_ttt',
                        'trip_id_something_or_other',
                        'Fitchburg',
+                       '1426679400',
+                       '1426681020',
                        'Tuesday')
         self.db.save_route_data(rd)
 
@@ -46,6 +50,8 @@ class TestDb(unittest.TestCase):
                        '1600',
                        'trip_id_something_or_other',
                        'Lowell',
+                       '1426679400',
+                       '1426681020',
                        'Monday')
         self.db.save_route_data(rd)
 
@@ -62,6 +68,8 @@ class TestDb(unittest.TestCase):
                        '1600',
                        'trip_id_something_or_other',
                        'Lowell',
+                       '1426679400',
+                       '1426681020',
                        'Monday')
         self.db.save_route_data(rd)
 
