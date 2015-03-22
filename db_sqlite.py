@@ -29,7 +29,8 @@ class DB_sqlite:
 
         # create tables
         self.c.execute('''CREATE TABLE if not exists route_data
-            (trip_number text primary key,
+            (trip_key text primary key,
+            trip_number text,
             tripdate timestamp default current_timestamp,
             vehicle_number text NULLABLE default NULL,
             last_trip_using_this_vehicle_number text,
@@ -42,16 +43,20 @@ class DB_sqlite:
             ''')
         self._disconnect_db()
 
+    def _make_trip_key(self, trip_number, trip_date):
+        return str(trip_number) + ' ' + str(trip_date)
+
     def save_route_data(self, route_data):
         self._connect_db()
         self.c = self.conn.cursor()
 
         try:
             self.c.execute('''
-            INSERT INTO route_data (trip_number, tripdate, vehicle_number, weekday, line, trip_id, trip_start_time, trip_end_time)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO route_data (trip_key, trip_number, tripdate, vehicle_number, weekday, line, trip_id, trip_start_time, trip_end_time)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)
             ''',
-                           (route_data.trip_number,
+                           (self._make_trip_key(route_data.trip_number, route_data.date),
+                            route_data.trip_number,
                            route_data.date,
                            route_data.vehicle_number,
                            route_data.weekday,

@@ -12,6 +12,8 @@ def todate(datestring):
     return datetime.datetime.fromtimestamp(int(datestring))
 
 api_key = 'jfhKC8TLdkWIsOs-DVEUGg'
+logging.basicConfig(level=logging.DEBUG)
+
 log = logging.getLogger("LinesDataCollection")
 log.setLevel(logging.INFO)
 

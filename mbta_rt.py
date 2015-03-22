@@ -49,9 +49,13 @@ class MbtaRt:
 
         for rid in routes.keys():
             try:
+                logging.info('Requesting data for route: %s', rid)
                 vehicle_info = urllib2.urlopen(vehicles_by_route_url + rid)
                 vehicle_data = json.load(vehicle_info)
+                logging.info('  data for route %s received.  Sleeping for %d seconds', rid, delay)
+
                 time.sleep(delay)
+                logging.info('  delay complete.  Processing data for route %s', rid)
                 try:
                     for dir in vehicle_data['direction']:
                         try:
