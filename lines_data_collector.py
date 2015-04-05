@@ -1,11 +1,14 @@
 #!/usr/bin/env python
 __author__ = 'wswanbeck'
 
+import argparse
 import datetime
 import logging
 import time
 
 from db_sqlite import DB_sqlite
+from db_mysql import DB_mysql
+
 from mbta_rt import MbtaRt
 
 def todate(datestring):
@@ -17,10 +20,9 @@ logging.basicConfig(level=logging.DEBUG)
 log = logging.getLogger("LinesDataCollection")
 log.setLevel(logging.INFO)
 
-def check_and_update(db_path, routes, delay=2):
+def check_and_update(db, routes, delay=2):
     log.info("--- Getting vehicle data ---")
 
-    db = DB_sqlite(db_path)
     vdatas = MbtaRt.get_all_vehicles(routes, delay=delay)
 
     for vdata  in vdatas.values():
@@ -36,7 +38,25 @@ def check_and_update(db_path, routes, delay=2):
 
 
 if __name__ == '__main__':
+
     log.info("=== Starting ===")
+
+    # parse any arguments
+    parser = argparse.ArgumentParser()
+    parser.add_argument('dbtype', choices=['sqlite', 'mysql'])
+    args = parser.parse_args()
+
+    if args.dbtype == 'sqlite':
+        db = DB_sqlite('db/mbta_collection.sqlite')
+    elif args.dbtype == 'mysql':
+        DB = 'tcollector'
+        DB_HOST = 'tcollector.swanbeck.net'
+        DB_USER = 'tcollector'
+        DB_PASSWORD = 'tc0llect0r'
+        db = DB_mysql(DB, DB_HOST, DB_USER, DB_PASSWORD)
+    else:
+        raise Exception('Specify dbtype=sqlite or dbtype=mysql')
+
 
     restart_interval = datetime.timedelta(minutes=15)
     wait_between_calls_seconds = 20
@@ -49,7 +69,7 @@ if __name__ == '__main__':
     delay = 1 # first time through go faster
     while True:
         start=datetime.datetime.now()
-        check_and_update('db/mbta_collection.sqlite', routes, delay=delay)
+        check_and_update(db, routes, delay=delay)
         delay = wait_between_calls_seconds # after first call, can slow down
         time_spent = datetime.datetime.now() - start
         if time_spent < restart_interval:
