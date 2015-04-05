@@ -1,4 +1,4 @@
-
+#!/usr/bin/env python
 __author__ = 'wswanbeck'
 
 import datetime
@@ -49,7 +49,7 @@ if __name__ == '__main__':
     delay = 1 # first time through go faster
     while True:
         start=datetime.datetime.now()
-        check_and_update('/Users/wendy/tmp/mbta_collection.sqlite', routes, delay=delay)
+        check_and_update('db/mbta_collection.sqlite', routes, delay=delay)
         delay = wait_between_calls_seconds # after first call, can slow down
         time_spent = datetime.datetime.now() - start
         if time_spent < restart_interval:
