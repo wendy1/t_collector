@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
+import sys; sys.path.append('..')
 import datetime
 import sys;
 from route_data import RouteData
@@ -33,7 +33,7 @@ class TestMultipleThings(unittest.TestCase):
             # save this data
             self.db.save_route_data(vdata)
             # check for previous route using same train
-            last_route = self.db.get_last_route_using_same_vehicle(vdata.vehicle_number, vdata.trip_number)
+            last_route = self.db.get_last_route_using_same_vehicle(vdata.vehicle_number, vdata.trip_start_time)
             if last_route is not None:
                 self.db.set_last_trip_using_same_vehicle(vdata.trip_number, last_route.trip_number, last_route.line)
 

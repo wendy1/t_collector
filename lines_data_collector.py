@@ -30,7 +30,7 @@ def check_and_update(db, routes, delay=2):
         log.info('Saving data for trip: %s, vehicle: %s, trip id "%s"', vdata.trip_number, vdata.vehicle_number, vdata.trip_id)
         db.save_route_data(vdata)
         # check for previous route using same train
-        last_route = db.get_last_route_using_same_vehicle(vdata.vehicle_number, vdata.trip_number)
+        last_route = db.get_last_route_using_same_vehicle(vdata.vehicle_number, vdata.trip_start_time)
         if last_route is not None:
             log.info('  Adding last train using same vehicle: This trip is %s, last trip ws %s, vehicle was %s',
                          vdata.trip_number, last_route.trip_number, vdata.vehicle_number)

@@ -83,17 +83,19 @@ class DB_mysql:
         self.conn.commit()
         self._disconnect_db()
 
-    def get_last_route_using_same_vehicle(self, vehicle_number, this_trip_number):
+    def get_last_route_using_same_vehicle(self, vehicle_number, this_trip_start_time):
         '''Returns the trip number (as a string) or None if not found'''
         self._connect_db()
         self.c = self.conn.cursor()
 
-        self.c.execute('''
+        self.c.execute(
+            '''
             SELECT trip_number, line, trip_id, trip_start_time, trip_end_time, weekday FROM route_data
-            WHERE vehicle_number=%s AND trip_number != %s
-            ORDER BY tripdate DESC
-            LIMIT 1''',
-           (vehicle_number, this_trip_number))
+                WHERE vehicle_number=%s AND trip_end_time < %s
+                ORDER BY trip_end_time DESC
+                LIMIT 1
+            ''',
+           (vehicle_number, this_trip_start_time))
 
         l = list(self.c.fetchall())
         self._disconnect_db()

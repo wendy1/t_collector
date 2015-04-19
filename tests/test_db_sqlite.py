@@ -1,8 +1,8 @@
 #!/usr/bin/env python
 # encoding: utf-8
-
+import sys;sys.path.append('..')
 import datetime
-import sys;
+from lines_data_collector import todate
 from route_data import RouteData
 
 sys.path.append('.');sys.path.append('..')
@@ -43,25 +43,42 @@ class TestDb(unittest.TestCase):
 
     def test_get_last_trip_with_same_vehicle(self):
         # no previous trip to start with
-        self.assertTrue(self.db.get_last_route_using_same_vehicle('1600', '333') is None)
+        self.assertTrue(self.db.get_last_route_using_same_vehicle('1600', datetime.datetime.now()) is None)
 
-        # previous trip 335 had this train
+        # current trip (only one so far)
+        this_trip_start_time_string = '1426679400'
         rd = RouteData('331',
                        '1600',
                        'trip_id_something_or_other',
                        'Lowell',
-                       '1426679400',
+                       this_trip_start_time_string,
                        '1426681020',
                        'Monday')
         self.db.save_route_data(rd)
 
+        # still no previous vehicle
+        last_route = self.db.get_last_route_using_same_vehicle('1600', todate(this_trip_start_time_string))
+        self.assertIsNone(last_route)
+
+        # add a previous vehicle
+        previous_trip_end_time_string = str(int(this_trip_start_time_string)-1)
+        previous_trip_start_time_string = str(int(previous_trip_end_time_string) -1)
+        rd = RouteData('330',
+                       '1600',
+                       'trip_id_something_or_other',
+                       'Lowell',
+                       previous_trip_start_time_string,
+                       previous_trip_end_time_string,
+                       'Monday')
+        self.db.save_route_data(rd)
+
         # now we find it
-        last_route = self.db.get_last_route_using_same_vehicle('1600', '333')
-        self.assertEqual(last_route.trip_number, '331')
+        last_route = self.db.get_last_route_using_same_vehicle('1600', todate(this_trip_start_time_string))
+        self.assertEqual(last_route.trip_number, '330')
         self.assertEqual(last_route.line, 'Lowell')
 
         # but not if it's the same trip number as the current trip
-        self.assertTrue(self.db.get_last_route_using_same_vehicle('1600', '331') is None)
+        self.assertTrue(self.db.get_last_route_using_same_vehicle('1600', this_trip_start_time_string) is None)
 
     def test_update_last_trip_number(self):
         rd = RouteData('333',
