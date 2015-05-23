@@ -46,6 +46,7 @@ if __name__ == '__main__':
     # parse any arguments
     parser = argparse.ArgumentParser()
     parser.add_argument('dbtype', choices=['sqlite', 'mysql'])
+    parser.add_argument('-o', action="store_true", dest="once")
     args = parser.parse_args()
 
     if args.dbtype == 'sqlite':
@@ -58,6 +59,11 @@ if __name__ == '__main__':
         db = DB_mysql(DB, DB_HOST, DB_USER, DB_PASSWORD)
     else:
         raise Exception('Specify dbtype=sqlite or dbtype=mysql')
+
+    if args.once:
+        log.info("Only running through once")
+    else:
+        log.info("Running forever")
 
 
     restart_interval = datetime.timedelta(minutes=15)
@@ -73,6 +79,11 @@ if __name__ == '__main__':
         start=datetime.datetime.now()
         check_and_update(db, routes, delay=delay)
         delay = wait_between_calls_seconds # after first call, can slow down
+
+        # if only want to run through once, then we're done
+        if args.once:
+            break
+
         time_spent = datetime.datetime.now() - start
         if time_spent < restart_interval:
             time_to_wait = restart_interval - time_spent
